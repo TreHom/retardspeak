@@ -42,6 +42,17 @@ const convertedText = computed(() => {
     })
     .join('')
 })
+
+const copyToClipboard = async () => {
+  if (!convertedText.value) return
+  
+  try {
+    await navigator.clipboard.writeText(convertedText.value)
+    // Optional: You could add a toast notification here
+  } catch (err) {
+    console.error('Failed to copy text:', err)
+  }
+}
 </script>
 
 <template>
@@ -61,7 +72,12 @@ const convertedText = computed(() => {
       </div>
       
       <div class="output-section">
-        <label for="output-text" class="label">Output Text</label>
+        <div class="label-container">
+          <label for="output-text" class="label">Output Text</label>
+          <button @click="copyToClipboard" class="copy-button" :disabled="!convertedText">
+            Copy All
+          </button>
+        </div>
         <textarea
           id="output-text"
           :value="convertedText"
@@ -137,12 +153,44 @@ const convertedText = computed(() => {
   flex-direction: column;
 }
 
+.label-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
 .label {
   font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
   color: var(--color-text);
   transition: color 0.3s;
+}
+
+.copy-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background-color: hsla(160, 100%, 37%, 1);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s, opacity 0.3s, transform 0.1s;
+}
+
+.copy-button:hover:not(:disabled) {
+  background-color: hsla(160, 100%, 32%, 1);
+  transform: translateY(-1px);
+}
+
+.copy-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.copy-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .text-box {
